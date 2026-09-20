@@ -153,8 +153,12 @@ vpf_prepare_outfile <- function(file, create_dir = TRUE) {
   if (file.exists(file) && file.access(file, mode = 2L) != 0L) {
     stop(sprintf("Output file exists and is not writable: '%s'.", file), call. = FALSE)
   }
-  ## Absolute paths survive any working-directory change made downstream.
-  if (!isTRUE(startsWith(file, "/"))) {
+  ## Absolute paths survive any working-directory change made downstream, and are
+  ## returned exactly as handed. A Windows path is absolute when it starts with a
+  ## drive letter or a UNC prefix, not only with `/`; rewriting one of those
+  ## changed its separators and made every writer return a path its caller had
+  ## not asked for.
+  if (!grepl("^(/|\\\\|[A-Za-z]:[/\\\\])", file)) {
     file <- file.path(normalizePath(parent, winslash = "/", mustWork = TRUE), basename(file))
   }
   file
