@@ -55,8 +55,8 @@ tpm_mat <- sweep(rpk, 2, colSums(rpk) / 1e6, "/")
 tpm_mat <- round(tpm_mat, 4)
 
 # TMM: simple column-sum normalisation (stands in for edgeR TMM)
-tmm_mat <- sweep(base_counts, 2, colSums(base_counts) / 1e6, "/")
-tmm_mat <- round(tmm_mat, 4)
+trimmed_mean_mat <- sweep(base_counts, 2, colSums(base_counts) / 1e6, "/")
+trimmed_mean_mat <- round(trimmed_mean_mat, 4)
 
 # Coverage fraction: proportion of contig bases covered
 covfrac_mat <- matrix(0, nrow = N_CONTIGS, ncol = N_SAMPLES,
@@ -333,7 +333,7 @@ tse <- TreeSummarizedExperiment::TreeSummarizedExperiment(
   assays = S4Vectors::SimpleList(
     counts  = base_counts,
     tpm     = tpm_mat,
-    tmm     = tmm_mat,
+    trimmed_mean = trimmed_mean_mat,
     covfrac = covfrac_mat
   ),
   colData = S4Vectors::DataFrame(col_meta),
@@ -398,7 +398,7 @@ for (i in seq_len(N2_CONTIGS)) {
 contig2_lengths <- 8000 + (seq_len(N2_CONTIGS) - 1) * 2500
 rpk2   <- sweep(base_counts2, 1, contig2_lengths / 1000, "/")
 tpm2   <- round(sweep(rpk2, 2, colSums(rpk2) / 1e6, "/"), 4)
-tmm2   <- round(sweep(base_counts2, 2, colSums(base_counts2) / 1e6, "/"), 4)
+trimmed_mean2 <- round(sweep(base_counts2, 2, colSums(base_counts2) / 1e6, "/"), 4)
 covfrac2 <- matrix(0, nrow = N2_CONTIGS, ncol = N2_SAMPLES,
                    dimnames = list(contig2_ids, sample2_ids))
 for (i in seq_len(N2_CONTIGS)) {
@@ -503,7 +503,7 @@ tse2 <- TreeSummarizedExperiment::TreeSummarizedExperiment(
   assays = S4Vectors::SimpleList(
     counts  = base_counts2,
     tpm     = tpm2,
-    tmm     = tmm2,
+    trimmed_mean = trimmed_mean2,
     covfrac = covfrac2
   ),
   colData = S4Vectors::DataFrame(col_meta2),
